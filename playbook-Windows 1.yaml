@@ -15,23 +15,24 @@
     remote_zip: "C:\\Temp\\Script.zip"
     remote_folder: "C:\\Temp\\Script"
     ps_script: "C:\\Temp\\Script\\Win-Pre.ps1"
-
+    vms:
+    - "PRUEBACOMMVAULT"
   tasks:
 
     # ---------------------------------------------------
     # 1. Leer TXT
     # ---------------------------------------------------
-    - name: Leer lista de VMs
-      ansible.builtin.slurp:
-        src: "vms.txt"
-      register: vm_list
+    #- name: Leer lista de VMs
+    #  ansible.builtin.slurp:
+    #    src: "vms.txt"
+     # register: vm_list
 
     # ---------------------------------------------------
     # 2. Parsear VMs 
     # ---------------------------------------------------
-    - name: Convertir contenido en lista
-      set_fact:
-        vms: "{{ vm_list.content | b64decode | split(',') }}"
+    #- name: Convertir contenido en lista
+     # set_fact:
+     #   vms: "{{ vm_list.content | b64decode | split(',') }}"
 
     - name: Generar script PowerCLI
       template:
