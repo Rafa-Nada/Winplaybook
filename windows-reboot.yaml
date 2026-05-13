@@ -1,0 +1,21 @@
+---
+- name: Reboot Windows VM
+  hosts: all
+  gather_facts: no
+
+  tasks:
+
+    - name: Reboot the Windows server
+      ansible.windows.win_reboot:
+        reboot_timeout: 1800
+        connect_timeout: 30
+        post_reboot_delay: 60
+        test_command: 'powershell.exe -Command "hostname"'
+
+    - name: Verify server is back online
+      ansible.windows.win_shell: hostname
+      register: hostname_output
+
+    - name: Display hostname
+      debug:
+        var: hostname_output.stdout
