@@ -1,0 +1,22 @@
+---
+- name: Install VirtIO Drivers
+  hosts: all
+  gather_facts: no
+
+  tasks:
+
+    - name: Install VirtIO Guest Tools
+      ansible.windows.win_package:
+        path: 'C:\Temp\Script\virtio-win-1.9.49\virtio-win-1.9.49\virtio-win-gt-x64.msi'
+        arguments: '/qn /norestart'
+        state: present
+      register: virtio_install
+
+    - name: Show installation result
+      debug:
+        var: virtio_install
+
+    - name: Reboot Windows VM if required
+      ansible.windows.win_reboot:
+        reboot_timeout: 1800
+      when: virtio_install.reboot_required
