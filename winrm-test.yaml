@@ -1,6 +1,6 @@
 ---
 - name: Test WinRM Connectivity
-  hosts: PRUEBACOMMVAULT-host
+  hosts: all
   gather_facts: no
 
   tasks:
