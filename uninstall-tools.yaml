@@ -1,0 +1,47 @@
+---
+- name: Uninstall VMware Tools and VirtIO Guest Tools
+  hosts: all
+  gather_facts: no
+  serial: 1
+
+  tasks:
+    - name: Check installed products
+      ansible.windows.win_shell: |
+        Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*,
+                         HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\* |
+        Where-Object {
+          $_.DisplayName -like "*VMware Tools*" -or
+          $_.DisplayName -like "*VirtIO*" -or
+          $_.DisplayName -like "*Red Hat*"
+        } |
+        Select-Object DisplayName, DisplayVersion, UninstallString
+      register: installed_tools
+
+    - name: Show detected tools
+      debug:
+        var: installed_tools.stdout_lines
+
+    - name: Uninstall VMware Tools
+      ansible.windows.win_package:
+        name: "VMware Tools"
+        state: absent
+      register: vmware_uninstall
+      ignore_errors: yes
+
+    - name: Uninstall VirtIO Guest Tools
+      ansible.windows.win_package:
+        name: "Virtio-win-guest-tools"
+        state: absent
+      register: virtio_uninstall
+      ignore_errors: yes
+
+    - name: Show uninstall result
+      debug:
+        msg:
+          - "VMware uninstall: {{ vmware_uninstall }}"
+          - "VirtIO uninstall: {{ virtio_uninstall }}"
+
+    - name: Reboot Windows VM after uninstall
+      ansible.windows.win_reboot:
+        reboot_timeout: 1800
+        post_reboot_delay: 60
